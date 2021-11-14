@@ -1,33 +1,46 @@
-// Your code here
-// checking if forked correctly
+const characterAPI = 'http://localhost:3000/characters';
+const characterBar = el('character-bar');
+const detailedInfo = el('detailed-info');
+const namePar = el('name');
+const image = el('image');
+const voteCount = el('vote-count');
+const voteForm = el('votes-form');
 
-const charAPI = 'http://localhost:3000';
+let currentCharacter;
 
-fetch(`${charAPI}/characters`)
-.then(res => res.json())
-.then(json => {
-    json.forEach(renderCharacter)
+voteForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    currentCharacter.votes += parseInt(e.target.votes.value);
+    showInfo(currentCharacter);
+    e.target.reset();
 });
 
-const charContainer = document.getElementById('character-bar');
+fetch(characterAPI)
+  .then((res) => res.json())
+  .then(renderCharacters);
 
-function renderCharacter(characters) {
-    const span = document.createElement('span');
-
-    span.textContent = characters.name;
-    charContainer.append(span)
+function renderCharacters(characters) {
+    characters.forEach(renderCharacter)
 };
 
-const charInfo = renderCharacter;
-charInfo.addEventListener('click', displayInfo);
+function renderCharacter(character) {
+    const characterSpan = document.createElement('span');
+    characterSpan.innerText = character.name;
+    characterBar.append(characterSpan);
 
-function displayInfo(event) { 
-    event.preventDefault();
+
+    characterSpan.addEventListener('click',  () => {
+        currentCharacter = character;
+        showInfo(character);
+    });
+};
+
+function showInfo(character) {
+    namePar.innerText = character.name;
+    image.src = character.image
+    voteCount.innerText = character.votes;
 }
-// create a click event listener on character bar
-// once clicked, call function that will display characters.id in div#detailed-info
 
-// 1. create variable that holds renderCharacter
-// 2. add eventListener to variable
-// 3. create function that will GET information from API
-// 4. eventListener will call that function with the info
+function el(id) {
+    return document.getElementById(id);
+};
